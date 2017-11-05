@@ -1,0 +1,237 @@
+--- 
+layout: default 
+--- 
+{% assign no_pagin_pages =  site.pages 
+    | where: "home-link", "true" 
+    | where_exp: "item", "item.layout != 'posts'" %}
+{% assign pagin_pages = site.pages 
+    | where_exp: "item", "item.layout == 'posts'" 
+    | where_exp: "item", "item.url == '/posts/'" 
+    | reverse %}
+{% assign items = no_pagin_pages 
+    | concat: pagin_pages
+    | sort: "index" %} 
+{% assign items_size = items | size %} 
+{% if items_size > 5 %}
+  {% assign item_col = "col s12 m6 offset-m0 l2 offset-l0" %} 
+{% elsif items_size > 4 %} 
+  {% assign item_col = "col s12 m6 offset-m0 l3 offset-l0" %} 
+{% elsif items_size > 3 %}
+  {% assign item_col = "col s12 m6 offset-m0 l3 offset-l0" %} 
+{% elsif items_size > 2 %}
+  {% assign item_col = "col s12 m6 offset-m0 l4 offset-l0" %} 
+{% else %}
+  {% assign item_col = "col s12" %} 
+{% endif %}
+{% assign parallax_sizes = "1200,1000,800,600,400" | split: "," %}
+{% assign parallax_dpi = "100,200,300" | split: "," %}
+
+<!-- First parallax zone -->
+<div class="parallax-container">
+    <!-- Banner -->
+    <div class="section no-pad-bot">
+
+        <div class="container home-banner">
+            <h1 class="header center home-title">{{ page.home-title }}</h1>
+            <div class="row center">
+                <h5 class="header col s12 home-intro">
+                    {{ page.intro }}
+                </h5>
+            </div>
+        </div>
+    </div>
+    <!-- First parallax image -->
+    
+    <div class="parallax">
+        <picture>
+
+            {% assign img = "parallax-1-" %}
+            {% for size in parallax_sizes %}
+                {% assign srcset = "" %}
+                {% for dpi in parallax_dpi %}
+                    {% assign factor = forloop.index0 | plus: 1 | append: "x," %}
+                    {% assign url = "/assets/img/home/" 
+                        | append: img 
+                        | append: size
+                        | append: "-" 
+                        | append: dpi 
+                        | append: ".jpg" 
+                        | relative_url %}
+                    {% assign srcset = srcset 
+                        | append: url 
+                        | append: " " 
+                        | append: factor
+                        | remove: '"' %}
+                {%  endfor %}
+                <source media="{{ "(min-width: " | append: size | append: "px)"}}" srcset="{{ srcset }}" />    
+            {%  endfor %}
+
+                {% assign srcset = "" %}
+                {% assign size = 400 %}
+                {% for dpi in parallax_dpi %}
+                    {% assign factor = forloop.index0 | plus: 1 | append: "x," %}
+                    {% assign url = "/assets/img/home/" 
+                        | append: img 
+                        | append: size
+                        | append: "-" 
+                        | append: dpi 
+                        | append: ".jpg" 
+                        | relative_url %}
+                    {% assign srcset = srcset 
+                        | append: url 
+                        | append: " " 
+                        | append: factor
+                        | remove: '"' %}
+                {%  endfor %}
+                <source media="{{ "(max-width: " | append: size | append: "px)"}}" srcset="{{ srcset }}" /> 
+            <img src={{"/assets/img/home/parallax-1.jpg" | relative_url }}/>
+        </picture>
+    </div>
+</div>
+
+<!-- Menu item zone -->
+<div class="home-container">
+    <div class="container">
+        <!-- Items zone -->
+        <div class="section">
+            <div class="row">
+                {% assign idx = 1 %}
+                {% for item in items %}
+                <div class="{{ item_col }} hoverable fixed-height">
+                    <div class="home-item">
+                        <div class="">
+                            <a class="{{ "menu-icon-" | append: idx }}" href={{ item.url | relative_url }}>
+        
+                                <i class="material-icons icon large">{{ item.icon }}</i>
+                            </a>
+                            <p class="home-item-title">{{ item.nav-title }}</p>
+                            <p class="home-item-desc">
+                                {{ item.description }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% assign idx = idx| plus: 1 %}
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Feature posts zone  -->
+        {% assign featured_posts = site.posts
+            | where_exp: "post", "post.featured"  %}
+        {% assign featured_size = featured_posts | size %}
+        {% if featured_size > 0 %}
+        <div class="divider"></div>
+        <div class="section">
+            <div class="row">
+                <div class="col s12">
+                    <h2 class="center home-post-title">
+                        {{page.publication-title}}
+                    </h2>
+                </div>
+                {% for post in featured_posts limit:2 %}
+                <div class="col s12">
+                    <div class="card hoverable featured-post">
+                        <div class="card-content">
+                            <div class="row">
+                                <a href={{ post.url | relative_url }}>
+                                    <span class="col s12 m10 left-align featured-post-title">
+                                        {{ post.intro }}
+                                    </span>
+                                </a>
+                                {% assign date_format = "%b %-d, %Y" %}
+                                <div class="col s12 m2 right-align featured-post-date">
+                                    {{ post.date | date: "%d/%m/%Y" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
+<!-- Second parallax zone -->
+<div class="parallax-container">
+    <!-- Banner -->
+    <div class="section no-pad-bot">
+
+        <div class="container home-banner">
+            <h1 class="header center home-subtitle">{{ page.home-subtitle }}</h1>
+        </div>
+    </div>
+    <!-- Second parallax image -->
+    <div class="parallax">
+        <picture>
+            {% assign img = "parallax-2-" %}
+            {% for size in parallax_sizes %}
+                {% assign srcset = "" %}
+                {% for dpi in parallax_dpi %}
+                    {% assign factor = forloop.index0 | plus: 1 | append: "x," %}
+                    {% assign url = "/assets/img/home/" 
+                        | append: img 
+                        | append: size
+                        | append: "-" 
+                        | append: dpi 
+                        | append: ".jpg" 
+                        | relative_url %}
+                    {% assign srcset = srcset 
+                        | append: url 
+                        | append: " " 
+                        | append: factor
+                        | remove: '"' %}
+                {%  endfor %}
+                <source media="{{ "(min-width: " | append: size | append: "px)"}}" srcset="{{ srcset }}">
+            {%  endfor %}
+
+            <!--      -->
+                {% assign srcset = "" %}
+                {% assign size = 400 %}
+                {% for dpi in parallax_dpi %}
+                    {% assign factor = forloop.index0 | plus: 1 | append: "x," %}
+                    {% assign url = "/assets/img/home/" 
+                        | append: img 
+                        | append: size
+                        | append: "-" 
+                        | append: dpi 
+                        | append: ".jpg" 
+                        | relative_url %}
+                    {% assign srcset = srcset 
+                        | append: url 
+                        | append: " " 
+                        | append: factor
+                        | remove: '"' %}
+                {%  endfor %}
+                <source media="{{ "(max-width: " | append: size | append: "px)"}}" srcset="{{ srcset }}" /> 
+            <img src=""/>
+        </picture>
+    </div>
+
+</div>
+<!-- Footer content zone -->
+<div class="home-container">
+    <div class="container">
+        <!-- Article zone -->
+        {% if page.show-content %}
+        <div class="section">
+            <div class="row">
+                <div class="col s12">
+                    <div class="card home-card hoverable">
+                        <div class="card-stacked">
+                            <div class="card-content md-content">
+                                {{ content }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+

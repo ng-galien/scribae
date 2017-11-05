@@ -1,0 +1,17 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+
+// Imports
+@import "colors";
+
+$theme_primary: $theme_1_p;
+$theme_secondary: $theme_1_s;
+$theme_background: $theme_1_b;
+$theme_md: $theme_1_md;
+
+@import "theme";
+@import "materialize";
+@import "menu";
+@import "home";
+@import "general";

@@ -1,0 +1,83 @@
+--- 
+layout: default
+---
+
+<div class="container">   
+    <div class="row">
+        {% if paginator.total_pages > 1 %}
+        <div class="col s12 paginator-mask">
+        </div>
+        <div class="col s12 paginator-fixed">
+            <div class="card hoverable paginator-card"> <!--paginator-fixed-->
+                <div class="card-content paginator-card-content">
+                        <ul class="pagination center">
+                                {% if paginator.previous_page %}
+                                    {% assign prev_style = "waves-effect" %}
+                                {% else %}
+                                    {% assign prev_style = "disabled" %}
+                                {% endif %}
+                                {% if paginator.next_page %}
+                                    {% assign next_style = "waves-effect" %}
+                                {% else %}
+                                    {% assign next_style = "disabled"  %}
+                                {% endif %}
+                                <li class={{ prev_style }}>
+                                    <a href={{ paginator.previous_page_path | relative_url }}>
+                                        <i class="material-icons">chevron_left</i>
+                                    </a>
+                                </li>
+                                {% for idx in (1..paginator.total_pages) %}
+                                    {% assign url = "/posts/page-" | append: idx %}
+                                    {% if idx == paginator.page %}
+                                        {% assign class = "active" %}
+                                    {% else %}
+                                        {% assign class = "waves-effect" %}
+                                    {% endif %}
+                                    {% if idx == 1 %}
+                                        {% assign url = "/posts/" %}
+                                    {% endif %}
+                                
+                                <li class={{ class }}>
+                                    <a href={{ url | relative_url }}>
+                                        {{ idx }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li class={{ next_style }}>
+                                    <a href={{ paginator.next_page_path | relative_url }}>
+                                        <i class="material-icons">chevron_right</i>
+                                    </a>
+                                </li>
+                            </ul>
+                </div>
+                
+            </div>
+        </div>
+        
+        {% endif %} 
+        {% for post in paginator.posts %}
+        <div class="col s12">
+            <div class="card hoverable ">
+                <div class="card-content post-card">
+                    <div class="row">
+                        <a href={{ post.url | relative_url }}>
+                            <span class="post-title col s12 m6 left-align card-title ">
+                                {{ post.title }}
+                            </span>
+                        </a>
+                        {% assign date_format = "%b %-d, %Y" %}
+                        <div class="col s12 m6 right-align post-date">
+                            {{ post.date | date: "%d/%m/%Y" }}
+                        </div>
+                    </div>
+                    <span class="truncate post-intro">
+                        {{ post.intro }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+    
+    

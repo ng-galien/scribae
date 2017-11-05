@@ -1,0 +1,156 @@
+/*
+Home page
+*/
+
+$home-background: $theme_background;
+
+.home-container {
+    background: $home-background;
+}
+
+.home-container .container {
+    width: 90%;
+}
+
+.home-title {
+
+    color: white !important;
+    //font-family: 'Lora', serif;
+    font-weight: 500 !important;
+    font-size: 5rem !important;
+    text-shadow: 2px 2px 8px #000000;
+    @media all and (max-width: 600px) {
+        font-size: 4rem !important;
+    }
+    @media all and (max-width: 400px) {
+        font-size: 3rem !important;
+    }
+
+}
+
+.home-subtitle {
+    @extend .home-title;
+}
+
+.home-intro {
+  margin: 2rem;
+  color: white !important;
+  //background-color:#ffffff50;
+  text-shadow: 1px 1px 3px #000000;
+  font-size: 3rem;
+  font-weight: 400 !important;
+  @media all and (max-width: 600px) {
+    font-size: 2rem !important;
+  }
+
+}
+
+.home-post-title {
+    color: $primary-color !important;
+    font-size: 2rem;
+}
+
+.featured-post {
+
+}
+
+.featured-post-title {
+    color: black;
+    font-size: 1.5rem;
+}
+.featured-post-date {
+  color: gray;
+  font-size: 1.3rem;
+}
+
+.home-card {
+    //background-color: $home-background;
+    @media #{$medium-and-up} {
+      // styles for medium screens and larger
+      text-align: center;
+    }
+    
+    margin-top: 20px;
+}
+
+.home-card-title {
+  font-size: 1.7rem;
+  font-weight: 500;
+  margin-top: 5px;
+  margin-bottom: 0
+}
+
+.home-card-image {
+  @media #{$medium-and-down} {
+    display: none
+  }
+}
+
+.home-item {
+  margin: 1rem;
+  @extend .center;
+  //background-color: $home-background;
+}
+.home-item-small > * {
+  vertical-align: middle;
+}
+
+.home-item-desc {
+  margin: 0rem;
+  font-size: 1.3rem !important;
+  font-weight: 400 !important;
+}
+.home-item-title {
+  @extend .center;
+  margin: 0.5rem;
+  font-size: 2.0rem !important;
+  font-weight: 500 !important;
+  color: darken($primary-color, 10%) !important;
+}
+
+
+
+.parallax-container {
+  @media #{$small-and-down} {
+    height: 300px;
+  }
+  @media #{$medium-and-up} {
+    // styles for medium screens and larger
+     height: 400px;
+  }
+  @media #{$large-and-up} {
+    // styles for large screens and up
+    height: 500px;
+  }
+  @media #{$extra-large-and-up} {
+    // styles for extra large screens and up
+    height: 600px;
+  }
+}
+.parallax-img-400 {
+    @media all and (max-width: 401px) {
+        display: none;
+    }
+}
+.parallax-img-600 {
+    @media all and (max-width: 601px) {
+        display: none;
+    }
+}
+.parallax-img-800 {
+    @media all and (max-width: 801px){
+        display: none;
+    }
+}
+.parallax-img-1000 {
+    @media all and (max-width: 1001px){
+        display: none !important;
+    }
+}
+.parallax-img-1200 {
+    @media all and (min-width: 1000px) {
+        display: none !important;
+    }
+}
+
+

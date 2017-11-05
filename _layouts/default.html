@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {% include head.html %}
+
+  <body>    
+    <!--
+        HEADER HERE
+    -->
+    {% include header.html %}
+
+    <main>
+        <!--
+            CONTENT HERE
+        -->
+        {{ content }}
+
+    </main>
+
+    {% include footer.html %}
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src={{ "/assets/js/materialize.js" | relative_url }}></script>
+    
+    <!--script type="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script-->
+    <script type="text/javascript" src={{ "/assets/js/jquery.matchHeight.js" | relative_url }}></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.plugins.min.js"></script>
+    <script id="dsq-count-scr" src="//la-forge-asso-foncine.disqus.com/count.js" async></script>
+    <script>
+        function setMDContent() {
+            $('.md-content').find('img').addClass("responsive-img");
+            $('.md-content').find('p').addClass("flow-text");
+            $('.md-content').find('table').addClass("bordered");
+            $('.md-content').find('table').addClass("");
+        }
+        $(document).ready(function () {
+            console.log("document loaded");
+            $(".button-collapse").sideNav({
+                menuWidth: "15rem"
+            });
+            $(".dropdown-button").dropdown();
+            $('.parallax').parallax();
+            $('.fixed-height-card').matchHeight({
+                byRow: true,
+                property: 'height',
+                target: null,
+                remove: true
+            });
+            $('.fixed-height').matchHeight({
+                byRow: true,
+                property: 'height',
+                target: null,
+                remove: false
+            });
+            $('.home-item-small-row').matchHeight({
+                byRow: true,
+                property: 'height',
+                target: null,
+                remove: false
+            });
+            
+            $('.scrollspy').scrollSpy();
+            
+            $('.paginator-fixed').pushpin({
+                offset: 70
+            });
+            $('.fixed-pos').pushpin({
+                offset: 50
+            });
+            $('.lazy').lazy({
+                afterLoad: function(element) {
+                    //$(element).addClass('materialboxed');
+                    //$(element).parents('.col').removeClass('hide');
+                    //$(window).trigger('resize');
+                },
+                onFinishedAll: function() {
+                    console.log('finished loading all images');
+                    $('.fixed-height-lazy').matchHeight({
+                        byRow: true,
+                        property: 'height',
+                        target: null,
+                        remove: false
+                    });
+                }
+            });
+            setMDContent();
+        });
+        
+        $( window ).on( "load", function() {
+            console.log( "window loaded" );
+        });
+      </script>
+  </body>
+
+</html>

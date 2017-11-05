@@ -1,0 +1,62 @@
+
+.menu-icon-0 {
+    color: $theme_0_p !important;
+}
+.menu-icon-1 {
+    color: $theme_1_p !important;
+}
+.menu-icon-2 {
+    color: $theme_2_p !important;
+}
+.menu-icon-3 {
+    color: $theme_3_p !important;
+}
+.menu-icon-4 {
+    color: $theme_4_p !important;
+  }
+.menu-icon-5 {
+    color: $theme_5_p !important;
+}
+.menu-icon-6 {
+    color: $theme_6_p !important;
+}
+
+.breadcrumb {
+    color: $theme_secondary;
+}
+
+.nav-path-main {
+    font-weight: 500;
+    font-size: 1.7rem;
+  }
+  
+  .nav-path {
+    font-weight: 400;
+    font-size: 1.5rem;
+  }
+  
+  .nav-link {
+    padding-left: 1rem;
+    font-weight: 400;
+    font-size: 1.4rem; 
+  }
+  
+  .nav-side-item {
+  
+  }
+  
+  .nav-dropdown-content {
+  
+      @extend .dropdown-content;
+      min-width: 13rem;
+  }
+  
+  .nav-dropdown-item span {
+      color: $primary-color;
+  }
+  
+  .nav-dropdown-head {
+      border-bottom-width: 1px;
+      border-bottom-color: $theme_primary;
+      border-bottom-style: solid;
+  }

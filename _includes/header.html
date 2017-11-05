@@ -1,0 +1,146 @@
+<!-- Dropdown Structure -->
+{% assign no_pagin_pages =  site.pages 
+    | where: "nav-link", "true" 
+    | where_exp: "item", "item.layout != 'posts'" %}
+{% assign post_pages = site.pages 
+    | where: "nav-link", "true" 
+    | where_exp: "item", "item.layout == 'posts'" 
+    | where_exp: "item", "item.url == '/posts/'" 
+%} 
+{% assign pages = no_pagin_pages 
+    | concat: post_pages
+    | sort: "index" %} 
+
+{% assign url = page.url | remove: "/index.html" | remove_first: "/" | split: '/' %}
+{% assign link = "/" | append: url.first | append: "/" %}
+
+{% assign parents = site.pages 
+    | where: "url", link 
+%}
+{% assign parent = parents.first %}
+{% if parent %}
+    {% assign icon = parent.icon %}
+{% else %}
+    {% assign icon = page.icon %}
+{% endif %}
+{% assign links = pages | where: "home-link", "true" %}
+<header>
+    <div class="navbar-fixed scrollspy">
+        <nav class="navigation">
+            <div class="nav-wrapper main-menu hide-on-med-and-up">
+                <a href="#" data-activates="side-nav-menu" class="button-collapse">
+                    <i class="material-icons">
+                        menu
+                    </i>
+                </a>
+                <a class="brand-logo" href={{ pages[0].url | relative_url }}>
+                    <i class="material-icons menu-icon medium left">
+                        {{ icon }}
+                    </i>
+                </a>
+                
+            </div>
+
+            <div class="nav-wrapper main-menu hide-on-small-only">
+                <a class="breadcrumb nav-path-main" href={{ pages[0].url | relative_url }}>
+                    <i class="material-icons menu-icon left">
+                        {{ icon }}
+                    </i>
+                    {{ pages[0].nav-title }}
+                </a>
+                {% for part in url %} 
+                {% if url.size > 1 and part == url.last %}
+                <a class="breadcrumb nav-path">
+                    {{ part | truncate: 35, '...' }}
+                </a>
+                {% else %}
+                <a class="breadcrumb nav-path" href={{ "/" | append: part | relative_url}}>
+                    {{ parent.nav-title }}
+                </a>
+                {% endif %} 
+                {% endfor %}
+                <ul class="right hide-on-med-and-down">
+                    {% for link in links %}
+                    <li>
+                        <a class="nav-link" href={{ link.url | relative_url }}>{{ link.nav-title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <ul class="right show-on-medium hide-on-large-only">
+                    <li>
+                        <a class="dropdown-button" href="#!" data-activates="nav-dropdown">
+                            <i class="material-icons menu-icon right">
+                                more_vert
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <ul class="side-nav" id="side-nav-menu">
+        <li>
+            <a class="nav-dropdown-item nav-dropdown-head" href={{ pages[0].url | relative_url }}>
+                <i class="material-icons small menu-icon-0">
+                    {{ pages[0].icon }}
+                </i>
+                <span>
+                    {{ pages[0].nav-title }}
+                </span>
+                
+            </a>
+        </li>      
+        {% for link in links %}
+        {% assign idx = forloop.index0 | plus: 1 %}
+        <li>
+            <a class="nav-dropdown-item " href={{ link.url | relative_url }}>
+                <i class="material-icons small {{ "menu-icon-" | append: idx }}">
+                    {{ link.icon }}
+                </i>
+                <span>
+                    {{ link.nav-title }}
+                </span>
+                
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    <ul class="nav-dropdown-content" id="nav-dropdown">
+        <li>
+            <a class="nav-dropdown-item nav-dropdown-head" href={{ pages[0].url | relative_url }}>
+                <i class="material-icons small menu-icon-0">
+                    {{ pages[0].icon }}
+                </i>
+                <span class="">
+                    {{ pages[0].nav-title }}
+                </span>
+            </a>
+        </li>     
+        {% for link in links %}
+        {% assign idx = forloop.index0 | plus: 1 %}
+        <li>
+            <a class="nav-dropdown-item" href={{ link.url | relative_url }}>
+                <i class="material-icons small {{ "menu-icon-" | append: idx }}">{{ link.icon }}</i>
+                <span>
+                    {{ link.nav-title }}    
+                </span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</header>
+
+<div class="debug">
+    <div style="display: block">
+        {% assign all_pages = site.pages | map: "url" %} all_pages = {{ all_pages | join: "
+        <br/>" }}
+    </div>
+    <div style="display: none">
+        {% assign post_pages = site.pages 
+            | where: "nav-link", "true" 
+            | where_exp: "item", "item.layout == 'posts'" 
+            | where_exp: "item", "item.url == '/posts/'" 
+            %} 
+        post_pages = {{ post_pages | join: "<br/>" }}
+    </div>
+</div>

@@ -1,0 +1,164 @@
+$page_color: $theme_background;
+
+$icon_color: $primary-color;
+
+.debug {
+  display: none
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+//MENU
+
+
+
+
+.navigation {
+  //@extend .blue-grey, .darken-3;  
+}
+.page-footer {
+  //@extend .blue-grey, .darken-3;  
+}
+//Media gallery
+.media-card-title {
+  //@extend .blue-grey, .darken-3, .white-text; 
+}
+.main-menu {
+  padding: 0 2rem 0 2rem
+}
+.media-nav {
+  //@extend .blue-grey, .darken-3, .white-text; 
+  padding-left: 2rem
+}
+.media-header {
+  //@extend .blue-grey, .darken-3, .white-text; 
+}
+.media-title {
+  margin: .82rem 0 .656rem 0
+}
+
+.video-card-image {
+  @media #{$medium-and-down} {
+    display: none
+  }
+}
+.video-gallery-thumb{
+  width: 11rem;
+}
+.image-galery.thumb {
+  width: 11rem;
+}
+.card-footer {
+  height: 4rem;
+  max-height: 4rem;
+}
+
+.table-of-contents a.active {
+  border-left-width: 5px;
+}
+.table-of-contents a {
+  font-size: 1.3rem;
+}
+
+/*
+Markdown content
+*/
+
+$md-color: darken($primary-color, 5%);
+
+.md-content {
+    color: #353535
+}
+.md-content p {
+    font-size: 1.2rem !important;
+}
+.md-content h1 {
+    font-size: 2.5rem !important;
+    color: $md-color;
+}
+.md-content h2 {
+    font-size: 2.1rem !important;
+    color: $md-color;
+}
+.md-content h3 {
+    font-size: 1.7rem !important;
+    color: $md-color;
+}
+
+.md-content hr {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    border-color: $md-color;
+    border-width: 1px; 
+    border-style: solid;
+    width: 60%;
+}
+
+.md-content th {
+  font-size: 1.3rem !important;
+  font-weight: 400;
+  color: $md-color;
+}
+
+.flow-text {
+  font-size: 1.45rem;
+}
+
+.post-card {
+  padding: 1.2rem !important;  
+}
+
+.post-title {
+  font-weight: 400 !important;
+  color: #292727
+}
+
+.post-date {
+    font-size: 1.3rem !important;
+  @extend .grey-text;  
+}
+
+.post-intro {
+  @extend .flow-text;
+  padding-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.post-link {
+  padding-bottom: 0rem !important;
+}
+
+.paginator-fixed {
+  z-index: 99 !important;
+}
+.paginator-mask {
+  min-height: 6rem !important;
+  height: 6rem !important;
+}
+.paginator-card {
+  width: 90%;
+  margin-left: 0.5rem;
+
+}
+.paginator-card-content {
+  padding: 0.5rem !important;
+}
+
+
+@media #{$medium-and-up} {
+  .paginator-card {
+    width: 85%;
+  }
+}
+@media #{$large-and-up} {
+  .paginator-card {
+    width: 70%;
+  }
+}
