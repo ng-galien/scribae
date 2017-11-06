@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'date'
 require 'i18n'
-require 'rmagick'
+require 'RMagick'
 require 'lorem_ipsum_amet'
 require 'jekyll'
 require 'yaml'
@@ -425,6 +425,8 @@ class Generator
         dpiFactor = dpi / 72
         if verbose
             text = Draw.new
+            text.font_family = 'tahoma'
+
             text.pointsize = w / 20 *  dpiFactor
             text.gravity = CenterGravity
             text.annotate(sample, 0,0,0, -w / 8 * dpiFactor, out) {
