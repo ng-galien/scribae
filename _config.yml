@@ -1,0 +1,32 @@
+---
+title: Titre du site
+lang: fr
+email: mail@mail.com
+description: Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for Google search
+  results) and in your feed.xml site description.
+baseurl: "/scribae-sample"
+url: https://ng-galien.github.io
+twitter_username: 
+github_username: 
+exclude:
+- "/sample"
+- "/import"
+markdown: kramdown
+theme: minima
+sass:
+  style: compressed
+collections:
+  albums:
+    output: true
+    permalink: "/:collection/:name"
+  tasks:
+    output: true
+    permalink: "/:collection/:name"
+  story:
+    output: false
+permalink: "/posts/:year-:month-:day-:title"
+paginate: 10
+paginate_path: "/posts/page-:num/"
+disqus:
+  shortname: 

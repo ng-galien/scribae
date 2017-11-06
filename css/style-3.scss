@@ -1,0 +1,16 @@
+---
+# Only the main Sass file needs front matter
+---
+//Import Color
+@import "colors";
+//Define primary colors
+$theme_primary: $theme_3_p;
+$theme_secondary: $theme_3_s;
+$theme_background: $theme_3_b;
+$theme_md: $theme_3_md;
+//Import components
+@import "theme";
+@import "materialize";
+@import "menu";
+@import "home";
+@import "general";
