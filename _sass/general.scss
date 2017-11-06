@@ -107,21 +107,28 @@ $md-color: darken($primary-color, 5%);
   color: $md-color;
 }
 
+$post_padding: 1.5rem;
+
+.post-title {
+  margin: 0rem;
+  padding: $post_padding;
+  font-size: 1.5rem ;
+  font-weight: 400;
+  color: $md-color;
+}
+
 .flow-text {
   font-size: 1.45rem;
 }
 
 .post-card {
-  padding: 1.2rem !important;  
-}
-
-.post-title {
-  font-weight: 400 !important;
-  color: #292727
+  padding-top: $post_padding;  
 }
 
 .post-date {
-    font-size: 1.3rem !important;
+  margin: 0rem;
+  padding: $post_padding;
+  font-size: 1.3rem !important;
   @extend .grey-text;  
 }
 

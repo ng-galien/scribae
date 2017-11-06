@@ -27,9 +27,40 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.plugins.min.js"></script>
     <script id="dsq-count-scr" src="//la-forge-asso-foncine.disqus.com/count.js" async></script>
+    {% if page.md-asset %}
+        {% assign url = page.url | remove: "/index.html" | remove_first: "/" | split: '/' %}
+        {% if url.last == page.layout %}
+            {% assign link = "/assets/img/" | append: page.layout | relative_url %}
+        {% else %}
+            {% assign link = "/assets/img/" | append: page.layout | append: "/" | append: url.last | relative_url %}
+        {% endif %}
+    <script> 
+        Document.MD_DOC = true; 
+        Document.MD_ASSET = '{{ link }}'; 
+    </script>
+    {% else %}
+    <script> Document.MD_DOC = false; </script>
+    {% endif %}    
     <script>
+
         function setMDContent() {
-            $('.md-content').find('img').addClass("responsive-img");
+            $('.md-content').find('img').each(function () {
+                if(Document.MD_DOC) {
+                    assetPath = Document.MD_ASSET + "/" + $(this).attr("alt");
+                    $(this).attr("src", assetPath);   
+                }
+                $(this).parent().css("text-align", "center")
+                $(this).addClass("responsive-img");
+                $(this).addClass("center");
+                /*$(this).load(function () { 
+                    //
+                    console.log('resize md image');
+                    $(this).data('width', $(this).width()); 
+                });*/
+                $(this).data('width', $(this).width());
+                console.log($(this))
+                
+            });
             $('.md-content').find('p').addClass("flow-text");
             $('.md-content').find('table').addClass("bordered");
             $('.md-content').find('table').addClass("");

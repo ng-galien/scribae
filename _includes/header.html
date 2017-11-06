@@ -51,7 +51,16 @@
                 {% for part in url %} 
                 {% if url.size > 1 and part == url.last %}
                 <a class="breadcrumb nav-path">
-                    {{ part | truncate: 35, '...' }}
+                    {% assign len = part | size %}
+                    {% if page.layout == 'post' %}
+                        {% assign break = 11 %}
+                    {% elsif page.layout == 'task' %}
+                        {% assign break = 4 %}
+                    {% else %}
+                        {% assign break = 0 %}
+                    {% endif %}
+                    {% assign str = part | slice: break, len %}
+                    {{ str | truncate: 22, '...' }}
                 </a>
                 {% else %}
                 <a class="breadcrumb nav-path" href={{ "/" | append: part | relative_url}}>

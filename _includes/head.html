@@ -11,8 +11,8 @@
   
   <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
   <!-- Import theme -->
-  {% if page.theme %}
-  {% assign theme = "/css/style-" | append: page.layout | append: ".css" | relative_url %}
+  {% if page.theme != nil %}
+  {% assign theme = "/css/style-" | append: page.theme | append: ".css" | relative_url %}
   <link rel="stylesheet" href={{ theme }} media="screen,projection">  
   {% else %}
   <link rel="stylesheet" href="{{ "/css/style.css" | relative_url }}" media="screen,projection">  

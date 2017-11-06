@@ -7,7 +7,7 @@ permalink: /tasks/
     <div class="row">
         {% for task in site.tasks %}
         {% assign paths = task.url | split: "/" %}
-        {% assign image_path = "assets/img/tasks/" | append: paths.last | append: "/thumb.jpg" %}
+        {% assign image_path = "assets/img/task/" | append: paths.last | append: "/thumb.jpg" %}
         <div class="col s12 m6 l4 xl3 fixed-height">
             <div class="card hoverable">
                 <div class="card-image waves-effect waves-block waves-light">
@@ -22,7 +22,7 @@ permalink: /tasks/
                     </span>
                     <p>
                         <a href={{ task.url | relative_url }}>
-                            {{ page.link-text }}
+                            Voir
                         </a>
                     </p>    
                 </div>
@@ -32,7 +32,7 @@ permalink: /tasks/
                         <i class="material-icons right">close
                         </i>
                     </span>
-                    <p>{{ task.description | newline_to_br  }}</p>
+                    <p>{{ task.intro | newline_to_br  }}</p>
                 </div>
             </div>
         </div>

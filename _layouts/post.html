@@ -1,26 +1,39 @@
 ---
 layout: default
 ---
+
 <div class="container">
     <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-
         <header class="post-header">
-            <h1 class="post-title" itemprop="name headline">{{ page.title | escape }}</h1>
-            <p class="post-meta">
-                <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-                    {% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %} {{ page.date | date: date_format }}
-                </time>
-                {% if page.author %} •
-                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
-                    <span itemprop="name">{{ page.author }}</span>
-                </span>
-                {% endif %}</p>
+            <div class="row">
+                <div class="col s12 m7">
+                    <h1 class="post-title" itemprop="name headline">{{ page.title | escape }}</h1>
+                </div>
+                <div class="col s12 m5">
+                    <h1 class="post-date">
+                        <span>Publié le </span>
+                        <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+                            {% assign date_format = "%d/%m/%Y" %} {{ page.date | date: date_format }}
+                        </time>
+                    </h1>
+        
+                </div>
+            </div>
+            <div class="row">
+                <p class="post-meta">
+                    {% if page.author %}
+                    <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                        <span itemprop="name">{{ page.author }}</span>
+                    </span>
+                    {% endif %}</p>
+            </div>
         </header>
+        <div class="divider">
 
-        <div class="md-content" itemprop="articleBody">
+        </div>
+        <div class="row md-content" itemprop="articleBody">
             {{ content }}
         </div>
-
         {% if site.disqus.shortname %} {% include disqus_comments.html %} {% endif %}
     </article>
 </div>

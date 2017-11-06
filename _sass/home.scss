@@ -108,49 +108,23 @@ $home-background: $theme_background;
   color: darken($primary-color, 10%) !important;
 }
 
-
-
 .parallax-container {
   @media #{$small-and-down} {
-    height: 300px;
+    height: 400px;
   }
   @media #{$medium-and-up} {
     // styles for medium screens and larger
-     height: 400px;
+     height: 500px;
   }
   @media #{$large-and-up} {
     // styles for large screens and up
-    height: 500px;
+    height: 600px;
   }
   @media #{$extra-large-and-up} {
     // styles for extra large screens and up
-    height: 600px;
+    height: 700px;
   }
 }
-.parallax-img-400 {
-    @media all and (max-width: 401px) {
-        display: none;
-    }
-}
-.parallax-img-600 {
-    @media all and (max-width: 601px) {
-        display: none;
-    }
-}
-.parallax-img-800 {
-    @media all and (max-width: 801px){
-        display: none;
-    }
-}
-.parallax-img-1000 {
-    @media all and (max-width: 1001px){
-        display: none !important;
-    }
-}
-.parallax-img-1200 {
-    @media all and (min-width: 1000px) {
-        display: none !important;
-    }
-}
+
 
 
