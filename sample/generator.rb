@@ -5,7 +5,7 @@ require 'RMagick'
 require 'lorem_ipsum_amet'
 require 'jekyll'
 require 'yaml'
-
+require 'rainbow'
 include Magick
 
 class Generator
@@ -23,21 +23,38 @@ class Generator
     @@album_dir = "_albums"
     @@album_asset = "albums"
     @@home_asset = "home"
+    @@import_dir = "import"
 
-    attr_reader :relative_url
+    @@env_url = "SCRIBAE_URL"
+    @@env_baseurl = "SCRIBAE_BASEURL"
+    @@env_gh_user = "SCRIBAE_GH_USER"
+    @@env_gh_pwd = "SCRIBAE_GH_PWD"
+    @@env_gh_repo = "SCRIBAE_GH_REPO"
 
-    def initialize(relative_url)  
+    attr_reader :verb
+    attr_reader :cfg_url
+    attr_reader :cfg_baseurl
+    attr_reader :cfg_gh_user
+    attr_reader :cfg_gh_pwd
+    attr_reader :cfg_repo
+
+    def initialize(verb)  
+        @verb = verb
         I18n.config.available_locales = :en
-        puts 'use locale: ' + I18n.locale.to_s
-        @relative_url = relative_url
-        checkdirs()
+        log "Use locale: #{I18n.locale.to_s}"
+        log "Process in #{Dir.pwd}"
+        if File.exists?('generator.rb')
+            log "Switching to parent folder"
+            Dir.chdir('..');
+            log "Process in #{Dir.pwd}"
+        end
     end
 
-    def loadYAML(path)
-
-    end
-
-    def writeYAML()
+    def log(string = nil)
+        #puts "verbose: #{@verb}" 
+        if !string.nil? and @verb
+            puts string
+        end
     end
 
     def sanitizeFilename(filename)
@@ -63,34 +80,47 @@ class Generator
 
     #Create directory structure
     def checkdirs ()
-        puts 'Process in ' + Dir.pwd 
-        if File.exists?('generator.rb')
-            puts 'Switching to parent'
-            Dir.chdir('..');
-            puts 'Process in ' + Dir.pwd 
-        end
-        puts 'Check asset dir'
-        path = File.join(@@asset_dir, @@img_dir)
+        log ":checkdirs"
+
+        path = File.join(@@import_dir)
+        log "Check import dir: #{path}"
         if !Dir.exist?(path)
             Dir::mkdir(path, 0777)
         end 
+        
+        path = File.join(@@css_dir)
+        log "Check css dir: #{path}"
+        if !Dir.exist?(path)
+            Dir::mkdir(path, 0777)
+        end 
+
+        path = File.join(@@asset_dir, @@img_dir)
+        log "Check asset dir: #{path}"
+        if !Dir.exist?(path)
+            Dir::mkdir(path, 0777)
+        end 
+
+        log "Check asset subdirs"
         [@@home_asset, @@post_asset, @@task_asset, @@story_asset, @@album_asset].each do |dir|
             path = File.join(@@asset_dir, @@img_dir, dir)
+            log " ->Check asset dir: #{path}"
             if !Dir.exist?(path)
                 Dir::mkdir(path, 0777)
             end  
         end 
-        puts 'Check collections dir'
 
-        [@@post_dir, @@task_dir, @@story_dir, @@album_dir].each do |dir|
+        log "Check collections dir"
+
+        ["posts", @@post_dir, @@task_dir, @@story_dir, @@album_dir].each do |dir|
+            log "   ->Check collection dir: #{dir}"
             if !Dir.exist?(dir)
                 Dir::mkdir(dir, 0777)
             end  
         end 
     end
 
-    def copyPages(force = false) 
-        puts 'Copy pages...'
+    def copy_pages(force = false) 
+        log ":copy_pages"
         dir = 'sample/pages/'
         if Dir.exist?(dir)
             pages = Dir.entries(dir)
@@ -103,7 +133,7 @@ class Generator
                         dest = './posts/'+ page
                     end
                     if not File.exists?(dest) or force
-                        puts 'copying '+ page
+                        log "   ->Copy #{dest}"
                         FileUtils.cp(src, dest)
                     end
                 end
@@ -111,12 +141,24 @@ class Generator
         end 
     end
 
-    def copyConfig()
-        puts "Check Jekyll config file"
-        config = '_config.yml'
-        unless File.exists?(config)
-            puts "Copy default config"
-            FileUtils.cp('sample/_config-default.yml', '_config.yml')
+    def copy_config(force = false)
+        log ":copy_config"
+        dest_config = '_config.yml'
+
+        @cfg_url = ENV[@@env_url]
+        @cfg_baseurl = ENV[@@env_baseurl]
+        @cfg_gh_user = ENV[@@env_gh_user]
+        @cfg_gh_pwd = ENV[@@env_gh_pwd]
+        @cfg_gh_repo = ENV[@@env_gh_repo]
+
+        if !File.exists?(dest_config) or force
+            config = YAML.load_file('sample/_config-default.yml')
+            config['url'] = @cfg_url
+            config['baseurl'] = @cfg_baseurl 
+            log "   ->Copy #{dest_config}"
+            File.open(dest_config,'w') do |h| 
+                h.write config.to_yaml
+             end
         end 
     end
     #------------- STYLES -------------#
@@ -126,6 +168,7 @@ class Generator
         dest = File.join(@@sass_dir, color_style)
         if not File.exist?(dest) or force
             src = File.join("sample", "scss", color_style)
+            log "Write #{dest}"
             FileUtils.cp(src, dest)
         end
     end
@@ -133,6 +176,7 @@ class Generator
     def gen_style(idx = 0)
         name = File.join(@@css_dir, "style-#{idx}.scss")
         file = File.open(name, "w")
+        log "Write #{name}"
         head = [
             "---",
             "# Only the main Sass file needs front matter",
@@ -160,6 +204,15 @@ class Generator
             gen_style(idx)
             idx += 1
         end
+    end
+
+    def init(force = false) 
+        checkdirs
+        copy_config(force)
+        copy_pages(force)
+        copy_theme_color(force)
+        gen_style_set
+        
     end
 
     def gen_post(sample = true, title = 'Article exemple', intro = nil, date = nil, featured = false)
@@ -204,7 +257,6 @@ class Generator
         if sample
             img = File.join(assetDir, 'sample.jpg')
             FileUtils.cp('sample/model/sample.jpg', img)
-            img = File.join(relative_url, img)
             file << "\n\n# " + LoremIpsum.lorem_ipsum(w: 4) 
             file << "\n\n"
             file << "![sample.jpg]()"
@@ -215,7 +267,6 @@ class Generator
             file << LoremIpsum.lorem_ipsum(w: 150) + "\n"
         end
     end
-
 
     def gen_post_set(nb = 10, title = 'Article généré automatiquement ')
         puts "gen posts set"
@@ -319,7 +370,7 @@ class Generator
         end
     end
 
-    def gentAlbums(nb = 6, imgs = 25)
+    def gen_album(nb = 6, imgs = 25)
         idx = 1
         nb.times do 
             date = Date.new(2017,1,1).next_day(idx)
@@ -406,7 +457,7 @@ class Generator
     end
 
     # Generate a responsive image set
-    def genImageSet(sizes, dpis, dir = ".", name = sample, verbose=false, msg = nil, src = nil)
+    def gen_image_set(sizes, dpis, dir = ".", name = sample, verbose=false, msg = nil, src = nil)
         sizes.each do |size|
             dpis.each do |dpi|
                 outFile = dir + "/" + name + "-" + size[0].to_s + "-" + dpi.round.to_s + ".jpg"
@@ -416,17 +467,138 @@ class Generator
     end
 
     # Generate home images
-    def genHomeImages()
+    def gen_home_images(sample)
         sizes = [[1200, 1000], [1000, 1000], [800, 800], [600, 800], [400, 600]]
         dpis = [72.0, 150.0, 200.0]
         path = File.join(@@asset_dir, @@img_dir, @@home_asset)
-        genImageSet(sizes, dpis, path, "parallax-1", true, "Image 1")
-        genImageSet(sizes, dpis, path, "parallax-2", true, "Image 2")
+        gen_image_set(sizes, dpis, path, "parallax-1", true, "Image 1")
+        gen_image_set(sizes, dpis, path, "parallax-2", true, "Image 2")
     end
 
 end
 
-generator = Generator.new('/scribae')
+yes = "oui"
+no = "non"
+
+help_cmd = "aide"
+init_cmd = "init"
+start_cmd = "--start"
+verbose_cmd = "--verbeux"
+force_cmd = "--force"
+all_cmd = "--tout"
+title_cmd = "--name"
+upadte_cmd = "--maj"
+sample_cmd = "--exemple"
+
+create_cmd = "creer"
+homeimg_cmd = "imagefond"
+post_cmd = "article"
+task_cmd = "sujet"
+story_cmd = "section"
+album_cmd = "album"
+nb_cmd = "nombre"
+
+empty_text = "Vous devez entrer une commande, par exemple " + Rainbow(help_cmd).magenta
+unknown_text = "Commande inconnue, essayez " + Rainbow(help_cmd).magenta
+logo_text = %Q{
+  ==============================================================
+  _____    _____   _____    _____   ____               ______   
+  / ____|  / ____| |  __ \  |_   _| |  _ \      /\     |  ____| 
+  | (___   | |      | |__) |   | |   | |_) |    /  \    | |__   
+  \___ \  | |      |  _  /    | |   |  _ <    / /\ \   |  __|   
+  ____) | | |____  | | \ \   _| |_  | |_) |  / ____ \  | |____  
+  |_____/   \_____| |_|  \_\ |_____| |____/  /_/    \_\ |______|
+  ==============================================================
+}
+help_text = [
+"----------------------------",
+"Aide de la ligne de commande",
+"----------------------------",
+"",
+Rainbow(help_cmd).green + " >> affiche l'aide",
+Rainbow(init_cmd).green + " >> initialise le site",
+"    options " + Rainbow(force_cmd).green + " pour écraser les fichiers déjà crées",
+"",
+Rainbow(create_cmd).green + " >> pour créer une publication",
+"",
+"    suivi de " + Rainbow(post_cmd).green + " >> pour un article",
+"              " + Rainbow(task_cmd).green + " >> pour un sujet",
+"              " + Rainbow(story_cmd).green + " >> pour une section de la narration",
+"              " + Rainbow(album_cmd).green + " >> pour une section de la narration",
+"",
+"    options " + Rainbow(force_cmd).green + " >> pour écraser les fichiers déjà crées",
+"            " + Rainbow(sample_cmd).green + " >> exemple prédéfini",
+"----------------------------",
+"-------------",
+"----",
+"",
+].join("\n")
+
+#
+cmd = ARGV
+verbose = cmd.delete(verbose_cmd) == verbose_cmd 
+#puts verbose
+#puts Rainbow("Execution de la commande...").blue
+generator = Generator.new(verbose)
+case cmd.shift
+when nil
+    puts Rainbow(empty_text).red
+    puts help_text
+when help_cmd
+    #puts Rainbow(logo_text).magenta
+    puts help_text
+when init_cmd
+    force = force_cmd == cmd.shift
+    if force
+        puts Rainbow("Etes-vous certain d'écraser tous les fichier? oui | non").magenta
+        
+        case answer = gets.chomp
+        when yes
+            generator.init true
+        else
+            puts Rainbow("Abandon de la commande!").blue
+        end
+    else
+        generator.init
+    end
+
+when create_cmd
+    sample = cmd.delete(sample_cmd) == sample_cmd 
+    case cmd.shift
+    when homeimg_cmd
+        puts Rainbow("Vous avez choisi de créer les images de fond").blue
+        if !sample
+        end
+        generator.gen_home_images(sample)
+    when post_cmd
+        puts Rainbow("Vous avez choisi créer un article").blue
+        puts Rainbow("Donnez le titre de l'article (vide pour abandonner):").magenta
+        date_time = nil
+        featured = false
+        title = gets.chomp
+        if title.empty?
+            puts Rainbow("Titre vide, abandon").magenta
+        else
+            puts Rainbow("Donnez la date et l'heure").magenta
+            puts Rainbow("La date s'écrit 01/01/2017 15:00 (vide choisir maintenant)").magenta
+            date = gets.chomp
+            unless date.empty?
+                date_time = nil
+            end
+            puts Rainbow("Ecrire l'intro:").magenta
+            intro = gets.chomp
+            puts Rainbow("L'article doit-il être mis en avant? oui | non").magenta
+            featured = gets.chomp == yes
+            #sample = true, title = 'Article exemple', intro = nil, date = nil, featured = false
+            generator.gen_post(sample, title, intro, date_time, featured)   
+        end
+    end
+else
+    puts Rainbow("Commande non prise en charge, abandon").magenta
+end
+
+
+#generator = Generator.new('/scribae')
 #generator.genConfig()
 #generator.genHomeImages()
 #generator.copyPages(true)
@@ -434,5 +606,5 @@ generator = Generator.new('/scribae')
 #generator.gen_post_set()
 #generator.genTask(true, 100, 'Thème exemple', nil)
 #generator.gen_task_set()
-generator.gen_story()
+#generator.gen_story(
 #generator.gen_style_set(5)

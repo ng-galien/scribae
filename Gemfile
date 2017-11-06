@@ -19,6 +19,7 @@ gem 'lorem_ipsum_amet'
 
 gem 'i18n', '~> 0.7.0'
 
+gem 'rainbow'
 
 # If you want to use GitHub Pages, remove the "gem "jekyll"" above and
 # uncomment the line below. To upgrade, run `bundle update github-pages`.
@@ -26,10 +27,10 @@ gem 'i18n', '~> 0.7.0'
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do
-  gem "jekyll-feed", "~> 0.6"
+  #em "jekyll-feed", "~> 0.6"
   gem "jekyll-paginate-v2", "~> 1.9"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+#gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
