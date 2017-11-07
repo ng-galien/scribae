@@ -425,7 +425,7 @@ class Generator
         dpiFactor = dpi / 72
         if verbose
             text = Draw.new
-            text.font_family = 'tahoma'
+            text.font_family = 'DejaVu-Sans'
 
             text.pointsize = w / 20 *  dpiFactor
             text.gravity = CenterGravity
