@@ -5,17 +5,18 @@
 
   <title>{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
   <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
-  <!--Import Google Icon Font-->
+  {% if site.local %}
+  <link href={{ "assets/local/material-icon.css" | relative_url }} rel="stylesheet">
+  {% else %}
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!--Import materialize.css-->
+  {% endif %}
   
-  <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
   <!-- Import theme -->
   {% if page.theme != nil %}
   {% assign theme = "/css/style-" | append: page.theme | append: ".css" | relative_url %}
   <link rel="stylesheet" href={{ theme }} media="screen,projection">  
   {% else %}
-  <link rel="stylesheet" href="{{ "/css/style.css" | relative_url }}" media="screen,projection">  
+  <link rel="stylesheet" href={{ "/css/style.css" | relative_url }} media="screen,projection">  
   {% endif %}
   <link rel="canonical" href="{{ page.url | replace:'index.html','' | absolute_url }}">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title | escape }}" href="{{ "/feed.xml" | relative_url }}">

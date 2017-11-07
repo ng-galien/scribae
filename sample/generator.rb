@@ -163,7 +163,8 @@ class Generator
         if !File.exists?(dev_config) or force
             config = YAML.load_file('sample/_config-default.yml')
             config['url'] = @cfg_url
-            config['baseurl'] = "" 
+            config['baseurl'] = ""
+            config['local'] = true 
             log "   ->Copy #{dev_config}"
             File.open(dev_config,'w') do |h| 
                 h.write config.to_yaml

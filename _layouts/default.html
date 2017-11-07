@@ -19,14 +19,19 @@
 
     {% include footer.html %}
     
+    {% if site.local %}
+    <script type="text/javascript" src={{ "/assets/local/jquery-3.2.1.js" | relative_url }}></script>
+    <script type="text/javascript" src={{ "/assets/local/jquery.lazy.js" | relative_url }}></script>
+    <script type="text/javascript" src={{ "/assets/local/jquery.lazy.plugins.js" | relative_url }}></script>
+    {% else %}
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src={{ "/assets/js/materialize.js" | relative_url }}></script>
-    
-    <!--script type="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script-->
-    <script type="text/javascript" src={{ "/assets/js/jquery.matchHeight.js" | relative_url }}></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.plugins.min.js"></script>
-    <script id="dsq-count-scr" src="//la-forge-asso-foncine.disqus.com/count.js" async></script>
+    {% endif %}
+    <script type="text/javascript" src={{ "/assets/js/jquery.matchHeight.js" | relative_url }}></script>
+    <script type="text/javascript" src={{ "/assets/js/materialize.js" | relative_url }}></script>
+    <!--script type="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script-->
+
     {% if page.md-asset %}
         {% assign url = page.url | remove: "/index.html" | remove_first: "/" | split: '/' %}
         {% if url.last == page.layout %}
