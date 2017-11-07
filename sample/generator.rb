@@ -156,7 +156,7 @@ class Generator
             config['url'] = @cfg_url
             config['baseurl'] = @cfg_baseurl 
             log "   ->Copy #{prod_config}"
-            File.open(dest_config,'w') do |h| 
+            File.open(prod_config,'w') do |h| 
                 h.write config.to_yaml
              end
         end 
