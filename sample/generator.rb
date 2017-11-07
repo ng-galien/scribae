@@ -143,20 +143,29 @@ class Generator
 
     def copy_config(force = false)
         log ":copy_config"
-        dest_config = '_config.yml'
-
+        prod_config = '_config.yml'
+        dev_config = '_config_dev.yml'
         @cfg_url = ENV[@@env_url]
         @cfg_baseurl = ENV[@@env_baseurl]
         @cfg_gh_user = ENV[@@env_gh_user]
         @cfg_gh_pwd = ENV[@@env_gh_pwd]
         @cfg_gh_repo = ENV[@@env_gh_repo]
 
-        if !File.exists?(dest_config) or force
+        if !File.exists?(prod_config) or force
             config = YAML.load_file('sample/_config-default.yml')
             config['url'] = @cfg_url
             config['baseurl'] = @cfg_baseurl 
-            log "   ->Copy #{dest_config}"
+            log "   ->Copy #{prod_config}"
             File.open(dest_config,'w') do |h| 
+                h.write config.to_yaml
+             end
+        end 
+        if !File.exists?(dev_config) or force
+            config = YAML.load_file('sample/_config-default.yml')
+            config['url'] = @cfg_url
+            config['baseurl'] = "/" 
+            log "   ->Copy #{dev_config}"
+            File.open(dev_config,'w') do |h| 
                 h.write config.to_yaml
              end
         end 
