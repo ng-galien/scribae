@@ -45,7 +45,8 @@
     </script>
     {% else %}
     <script> Document.MD_DOC = false; </script>
-    {% endif %}    
+    {% endif %}   
+    <script> Document.PARALLAX_FACTOR = 1; console.log('Document.PARALLAX_FACTOR '+ Document.PARALLAX_FACTOR)</script> 
     <script>
 
         function setMDContent() {

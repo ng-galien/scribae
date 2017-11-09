@@ -2619,8 +2619,8 @@ if (Vel) {
         var windowHeight = window.innerHeight;
         var windowBottom = scrollTop + windowHeight;
         var percentScrolled = (windowBottom - top) / (container_height + windowHeight);
-        var parallax = Math.round(parallax_dist * percentScrolled);
-
+        var parallax = Math.round(parallax_dist * percentScrolled * Document.PARALLAX_FACTOR);
+        //console.log('par:' + parallax + ' %scroll: '+ percentScrolled)
         if (initial) {
           $img.css('display', 'block');
         }
@@ -2633,7 +2633,7 @@ if (Vel) {
       //$this.children("img").one("load", function () {
       $this.find("img").one("load", function () {
         updateParallax(true);
-        console.log("update parallax");
+        //console.log("update parallax");
       }).each(function () {
         if (this.complete) $(this).trigger("load");
       });

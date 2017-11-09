@@ -3,10 +3,10 @@ layout: default
 --- 
 {% assign no_pagin_pages =  site.pages 
     | where: "home-link", "true" 
-    | where_exp: "item", "item.layout != 'posts'" %}
+    | where_exp: "page", "page.layout != 'posts'" %}
 {% assign pagin_pages = site.pages 
-    | where_exp: "item", "item.layout == 'posts'" 
-    | where_exp: "item", "item.url == '/posts/'" 
+    | where_exp: "page", "page.layout == 'posts'" 
+    | where_exp: "page", "page.url == '/posts/'" 
     | reverse %}
 {% assign items = no_pagin_pages 
     | concat: pagin_pages
@@ -23,8 +23,9 @@ layout: default
 {% else %}
   {% assign item_col = "col s12" %} 
 {% endif %}
-{% assign parallax_sizes = "1200,1000,800,600,400" | split: "," %}
-{% assign parallax_dpi = "72,150,200" | split: "," %}
+{% assign parallax_sizes = "1600,1200,800,600" | split: "," %}
+{% assign small_size = 600 %}
+{% assign parallax_dpi = "100,200,300" | split: "," %}
 
 <!-- First parallax zone -->
 <div class="parallax-container">
@@ -67,7 +68,7 @@ layout: default
             {%  endfor %}
 
                 {% assign srcset = "" %}
-                {% assign size = 400 %}
+                {% assign size = small_size %}
                 {% for dpi in parallax_dpi %}
                     {% assign factor = forloop.index0 | plus: 1 | append: "x," %}
                     {% assign url = "/assets/img/home/" 
@@ -97,10 +98,11 @@ layout: default
             <div class="row">
                 {% assign idx = 1 %}
                 {% for item in items %}
+                {% assign icon_theme = "menu-icon-" | append: item.theme %}
                 <div class="{{ item_col }} hoverable fixed-height">
                     <div class="home-item">
                         <div class="">
-                            <a class="{{ "menu-icon-" | append: idx }}" href={{ item.url | relative_url }}>
+                            <a class={{ icon_theme }} href={{ item.url | relative_url }}>
         
                                 <i class="material-icons icon large">{{ item.icon }}</i>
                             </a>
@@ -190,7 +192,7 @@ layout: default
 
             <!--      -->
                 {% assign srcset = "" %}
-                {% assign size = 400 %}
+                {% assign size = small_size %}
                 {% for dpi in parallax_dpi %}
                     {% assign factor = forloop.index0 | plus: 1 | append: "x," %}
                     {% assign url = "/assets/img/home/" 

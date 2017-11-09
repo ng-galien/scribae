@@ -30,7 +30,7 @@ twitter_username:
 github_username:  
 
 exclude:
-  - /sample 
+  - /util 
   - /import
 
 # Build settings

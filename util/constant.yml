@@ -1,0 +1,22 @@
+---
+img-dpi:
+  - 100
+  - 200
+  - 300
+img-size:
+  small:
+    w: 600
+    h: 500
+  medium:
+    w: 800
+    h: 600
+  large:
+    w: 1200
+    h: 900
+  xl:
+    w: 1600
+    h: 1200
+#  smallest:
+#    w: 400
+#    h: 400
+---

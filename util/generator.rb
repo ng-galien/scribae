@@ -6,10 +6,14 @@ require 'lorem_ipsum_amet'
 require 'jekyll'
 require 'yaml'
 require 'rainbow'
+
+require_relative "util"
+
 include Magick
 
 class Generator
     
+    @@util_dir = "util"
     @@css_dir = "css"
     @@sass_dir = "_sass"
     @@asset_dir = "assets"
@@ -121,7 +125,7 @@ class Generator
 
     def copy_pages(force = false) 
         log ":copy_pages"
-        dir = 'sample/pages/'
+        dir = 'util/pages/'
         if Dir.exist?(dir)
             pages = Dir.entries(dir)
             pages.each do |page|
@@ -152,7 +156,7 @@ class Generator
         @cfg_gh_repo = ENV[@@env_gh_repo]
 
         if !File.exists?(prod_config) or force
-            config = YAML.load_file('sample/_config-default.yml')
+            config = YAML.load_file('util/_config-default.yml')
             config['url'] = @cfg_url
             config['baseurl'] = @cfg_baseurl 
             log "   ->Copy #{prod_config}"
@@ -161,10 +165,13 @@ class Generator
              end
         end 
         if !File.exists?(dev_config) or force
-            config = YAML.load_file('sample/_config-default.yml')
+            config = YAML.load_file('util/_config-default.yml')
             config['url'] = @cfg_url
             config['baseurl'] = ""
-            config['local'] = true 
+            config['future'] = true
+            config['local'] = true
+            config['incremental'] = true
+            config['profile'] = true
             log "   ->Copy #{dev_config}"
             File.open(dev_config,'w') do |h| 
                 h.write config.to_yaml
@@ -177,17 +184,18 @@ class Generator
         color_style = "colors.scss"
         dest = File.join(@@sass_dir, color_style)
         if not File.exist?(dest) or force
-            src = File.join("sample", "scss", color_style)
+            src = File.join(@@util_dir, "scss", color_style)
             log "Write #{dest}"
             FileUtils.cp(src, dest)
         end
     end
 
     def gen_style(idx = 0)
+        log ":gen_style in #{Dir.pwd}"
         name = File.join(@@css_dir, "style-#{idx}.scss")
-        file = File.open(name, "w")
-        log "Write #{name}"
-        head = [
+        file = File.open(name, "w+")
+        log "Write #{file}"
+        style = [
             "---",
             "# Only the main Sass file needs front matter",
             "---",
@@ -205,7 +213,9 @@ class Generator
             "@import \"home\";",
             "@import \"general\";",
         ].join("\n") + "\n"
-        file << head
+        file << style
+    ensure
+        file.close
     end
 
     def gen_style_set(nb = 5)
@@ -266,7 +276,7 @@ class Generator
         file << head
         if sample
             img = File.join(assetDir, 'sample.jpg')
-            FileUtils.cp('sample/model/sample.jpg', img)
+            FileUtils.cp('util/model/sample.jpg', img)
             file << "\n\n# " + LoremIpsum.lorem_ipsum(w: 4) 
             file << "\n\n"
             file << "![sample.jpg]()"
@@ -276,6 +286,8 @@ class Generator
             file << "\n"
             file << LoremIpsum.lorem_ipsum(w: 150) + "\n"
         end
+    ensure
+        file.close
     end
 
     def gen_post_set(nb = 10, title = 'Article généré automatiquement ')
@@ -338,7 +350,8 @@ class Generator
             genImage(1000, 600, 150, taskImg1, true, title, nil)
             genImage(400, 200, 72, taskImg2, true, "autre", nil)
         end
-        
+    ensure
+        file.close    
     end
 
     def gen_task_set(nb = 7, title = 'Thème exemple')       
@@ -416,24 +429,33 @@ class Generator
         end
     end
 
-    def genImage(w = 1280, h = 800, dpi=72.0, out = "sample.jpg", verbose = true,  msg = "message", src = nil)
-        puts "genImage to " + out
+    def gen_image(w = 1280, h = 800, dpi=72.0, out = "sample.jpg", msg = "message", src = nil)
+        
+        log "genImage to " + out
         size = w.to_s + "x" + h.to_s
         col1 = "%06x" % (rand * 0xffffff)
         col2 = "%06x" % (rand * 0xffffff)
         imgSpec = "plasma:#" + col1 + "-#" + col2
-        #Load immage
+        #Load immage if src is nil
         sample = nil
         if src == nil
-            sample = ImageList.new(imgSpec) { self.size =  size}
+            sample = ImageList.new(imgSpec) { self.size =  size}            
         else
             sample = ImageList.new(src)
         end
-        #resample at target dpi
-        sample = sample.resample(dpi);
+        log "Image #{sample.columns} X #{sample.rows}"
+        
         #verbosity
+        #sample.resize!(w, h)
+        sample.resize_to_fill!(w, h)
+        #resample at target dpi
+        #sample = sample.resample(dpi);
+        #sample.units = Magick::PixelsPerInchResolution
+        #sample.density = "#{dpi}x#{dpi}"
+        
+        log "Image #{sample.columns} X #{sample.rows}"
         dpiFactor = dpi / 72
-        if verbose
+        if !msg.nil?
             text = Draw.new
             text.font_family = 'DejaVu-Sans'
 
@@ -460,161 +482,40 @@ class Generator
         if(dpi > 150)
             quality = 40
         end
-        puts "quality #{quality}"
+        quality = 80
+        log "quality #{quality}"
         sample.write(out) {
             self.quality = quality
         }
+
     end
 
     # Generate a responsive image set
-    def gen_image_set(sizes, dpis, dir = ".", name = sample, verbose=false, msg = nil, src = nil)
+    def gen_image_set(sizes, dpis, dir = ".", name = sample, msg = nil, src = nil)
         sizes.each do |size|
             dpis.each do |dpi|
-                outFile = dir + "/" + name + "-" + size[0].to_s + "-" + dpi.round.to_s + ".jpg"
-                genImage(size[0], size[1], dpi, outFile, verbose, msg, src)
+                outFile = dir + "/" + name + "-" + size['w'].to_s + "-" + dpi.round.to_s + ".jpg"
+                gen_image(size['w'], size['h'], dpi, outFile, msg, src)
             end
         end
     end
 
     # Generate home images
-    def gen_home_images(sample)
-        sizes = [[1200, 1000], [1000, 1000], [800, 800], [600, 800], [400, 600]]
-        dpis = [72.0, 150.0, 200.0]
+    def gen_home_images(sample=true)
+        const = Util.get_constant
+        dpi = const['img-dpi']
+        size = const['img-size'].values
         path = File.join(@@asset_dir, @@img_dir, @@home_asset)
-        gen_image_set(sizes, dpis, path, "parallax-1", true, "Image 1")
-        gen_image_set(sizes, dpis, path, "parallax-2", true, "Image 2")
+        if sample
+            gen_image_set(size, dpi, path, "parallax-1", "Image 1")
+            gen_image_set(size, dpi, path, "parallax-2", "Image 2")
+        else
+            gen_image_set(size, dpi, path, "parallax-1", nil, "util/media/1.jpg")
+            gen_image_set(size, dpi, path, "parallax-2", nil,  "util/media/2.jpg")
+        end
     end
 
 end
 
-yes = "oui"
-no = "non"
-
-help_cmd = "aide"
-init_cmd = "init"
-start_cmd = "--start"
-verbose_cmd = "--verbeux"
-force_cmd = "--force"
-all_cmd = "--tout"
-title_cmd = "--name"
-upadte_cmd = "--maj"
-sample_cmd = "--exemple"
-
-create_cmd = "creer"
-homeimg_cmd = "imagefond"
-post_cmd = "article"
-task_cmd = "sujet"
-story_cmd = "section"
-album_cmd = "album"
-nb_cmd = "nombre"
-
-empty_text = "Vous devez entrer une commande, par exemple " + Rainbow(help_cmd).magenta
-unknown_text = "Commande inconnue, essayez " + Rainbow(help_cmd).magenta
-logo_text = %Q{
-  ==============================================================
-  _____    _____   _____    _____   ____               ______   
-  / ____|  / ____| |  __ \  |_   _| |  _ \      /\     |  ____| 
-  | (___   | |      | |__) |   | |   | |_) |    /  \    | |__   
-  \___ \  | |      |  _  /    | |   |  _ <    / /\ \   |  __|   
-  ____) | | |____  | | \ \   _| |_  | |_) |  / ____ \  | |____  
-  |_____/   \_____| |_|  \_\ |_____| |____/  /_/    \_\ |______|
-  ==============================================================
-}
-help_text = [
-"----------------------------",
-"Aide de la ligne de commande",
-"----------------------------",
-"",
-Rainbow(help_cmd).green + " >> affiche l'aide",
-Rainbow(init_cmd).green + " >> initialise le site",
-"    options " + Rainbow(force_cmd).green + " pour écraser les fichiers déjà crées",
-"",
-Rainbow(create_cmd).green + " >> pour créer une publication",
-"",
-"    suivi de " + Rainbow(post_cmd).green + " >> pour un article",
-"              " + Rainbow(task_cmd).green + " >> pour un sujet",
-"              " + Rainbow(story_cmd).green + " >> pour une section de la narration",
-"              " + Rainbow(album_cmd).green + " >> pour une section de la narration",
-"",
-"    options " + Rainbow(force_cmd).green + " >> pour écraser les fichiers déjà crées",
-"            " + Rainbow(sample_cmd).green + " >> exemple prédéfini",
-"----------------------------",
-"-------------",
-"----",
-"",
-].join("\n")
-
-#
-cmd = ARGV
-verbose = cmd.delete(verbose_cmd) == verbose_cmd 
-#puts verbose
-#puts Rainbow("Execution de la commande...").blue
-generator = Generator.new(verbose)
-case cmd.shift
-when nil
-    puts Rainbow(empty_text).red
-    puts help_text
-when help_cmd
-    #puts Rainbow(logo_text).magenta
-    puts help_text
-when init_cmd
-    force = force_cmd == cmd.shift
-    if force
-        puts Rainbow("Etes-vous certain d'écraser tous les fichier? oui | non").magenta
-        
-        case answer = gets.chomp
-        when yes
-            generator.init true
-        else
-            puts Rainbow("Abandon de la commande!").blue
-        end
-    else
-        generator.init
-    end
-
-when create_cmd
-    sample = cmd.delete(sample_cmd) == sample_cmd 
-    case cmd.shift
-    when homeimg_cmd
-        puts Rainbow("Vous avez choisi de créer les images de fond").blue
-        if !sample
-        end
-        generator.gen_home_images(sample)
-    when post_cmd
-        puts Rainbow("Vous avez choisi créer un article").blue
-        puts Rainbow("Donnez le titre de l'article (vide pour abandonner):").magenta
-        date_time = nil
-        featured = false
-        title = gets.chomp
-        if title.empty?
-            puts Rainbow("Titre vide, abandon").magenta
-        else
-            puts Rainbow("Donnez la date et l'heure").magenta
-            puts Rainbow("La date s'écrit 01/01/2017 15:00 (vide choisir maintenant)").magenta
-            date = gets.chomp
-            unless date.empty?
-                date_time = nil
-            end
-            puts Rainbow("Ecrire l'intro:").magenta
-            intro = gets.chomp
-            puts Rainbow("L'article doit-il être mis en avant? oui | non").magenta
-            featured = gets.chomp == yes
-            #sample = true, title = 'Article exemple', intro = nil, date = nil, featured = false
-            generator.gen_post(sample, title, intro, date_time, featured)   
-        end
-    end
-else
-    puts Rainbow("Commande non prise en charge, abandon").magenta
-end
-
-
-#generator = Generator.new('/scribae')
-#generator.genConfig()
-#generator.genHomeImages()
-#generator.copyPages(true)
-#generator.gen_post(true, 'Premier article', nil, nil, true)
-#generator.gen_post_set()
-#generator.genTask(true, 100, 'Thème exemple', nil)
-#generator.gen_task_set()
-#generator.gen_story(
-#generator.gen_style_set(5)
+gen = Generator.new(true)
+gen.gen_home_images false
