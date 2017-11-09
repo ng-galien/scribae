@@ -124,25 +124,30 @@ class Generator
     end
 
     def copy_pages(force = false) 
-        log ":copy_pages"
-        dir = 'util/pages/'
-        if Dir.exist?(dir)
-            pages = Dir.entries(dir)
-            pages.each do |page|
-                if page.end_with?('.md', '.html')
-                    src = dir + page
-                    dest = page
-                    #specific for posts
-                    if(page == 'index.html')
-                        dest = './posts/'+ page
-                    end
-                    if not File.exists?(dest) or force
-                        log "   ->Copy #{dest}"
-                        FileUtils.cp(src, dest)
-                    end
+        log ":copy_pages in #{Dir.pwd}"
+        origin = Dir.pwd
+        src_dir = File.join(@@util_dir, 'pages')
+        if Dir.exist?(src_dir)
+            
+            Dir.chdir(src_dir)
+            pages = Dir.glob("*.{md,html}")
+            Dir.chdir(origin)  
+            pages.each do |page|    
+                src = File.join(src_dir, page)
+                dest = File.join(page)
+                #specific for posts
+                if(page == 'index.html')
+                    dest = File.join("posts", page)
+                end
+                if not File.exists?(dest) or force
+                    log "   ->Copy #{dest}"
+                    FileUtils.cp(src, dest)
+                else
+                    log "Skip copy,#{dest} already exists"
                 end
             end
         end 
+        
     end
 
     def copy_config(force = false)
@@ -194,7 +199,7 @@ class Generator
         log ":gen_style in #{Dir.pwd}"
         name = File.join(@@css_dir, "style-#{idx}.scss")
         file = File.open(name, "w+")
-        log "Write #{file}"
+        log "Write #{name}"
         style = [
             "---",
             "# Only the main Sass file needs front matter",
@@ -391,6 +396,8 @@ class Generator
             genImage(400, 250, 150, File.join(story_asset, story_img), true, 'section-image-'+ idx.to_s)
             idx += 1
         end
+    ensure
+        file.close
     end
 
     def gen_album(nb = 6, imgs = 25)
@@ -517,5 +524,3 @@ class Generator
 
 end
 
-gen = Generator.new(true)
-gen.gen_home_images false

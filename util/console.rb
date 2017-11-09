@@ -153,17 +153,22 @@ class Console
         
     end
 
-    def handle_command()
+    def handle_command(args)
         finish = false
         silent = false
-        begin
+        cmd = []
         while !finish do
-            if (cmd.delete(@@no_interractive_opt) == @@no_interractive_opt)
+            
+            if (args.delete(@@no_interractive_opt) == @@no_interractive_opt)
                 finish = true
                 silent = true
             end
-            puts  @@prompt_text
-            cmd = gets.chomp.split(" ")
+            if !silent 
+                puts  @@prompt_text
+                cmd = gets.chomp.split(" ")
+            else
+                cmd = args
+            end
             verbose = cmd.delete(@@verbose_opt) == @@verbose_opt
             case cmd.shift
             when nil
@@ -195,13 +200,9 @@ class Console
                 puts @@unknown_text
             end
         end
-        rescue => e
-            puts $!
-        raise e
     end
 end
 
 Util.set_path
 cons = Console.new
-#cons.background
-cons.handle_command
+cons.handle_command(ARGV)
