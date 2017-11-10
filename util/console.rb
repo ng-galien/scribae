@@ -135,28 +135,34 @@ class Console
             intro = gets.chomp
             puts Rainbow("L'article doit-il être mis en avant? oui | non").magenta
             featured = gets.chomp == @@yes
-            gen = Generator.new(true)
+            gen = Generator.new(verbose)
             gen.gen_post(sample, title, intro, date_time, featured)
         end
     end
 
     def create_task(verbose=false, cmd=nil)
+        puts Rainbow("Fonction non active, patientez un peu...").red
     end
 
     def create_section(verbose=false, cmd=nil)
+        puts Rainbow("Fonction non active, patientez un peu...").red
     end
 
     def create_album(verbose=false, cmd=nil)
+        puts Rainbow("Fonction non active, patientez un peu...").red
     end
 
     def create_sample(verbose=false, cmd=nil)
         
-        gen = Generator.new(true)
+        gen = Generator.new(verbose)
+        puts Rainbow("Vous avez choisi de créer un ensemble d'exemple").blue
+        puts Rainbow("Avec l'option #{@@verbose_opt} vous suivrez le processus").yellow
         gen.gen_home_images true
         gen.gen_post_set(28, "Article exemple")
         gen.gen_task_set(5, 'Thème')
         gen.gen_story_set()
         gen.gen_album_set()
+        puts Rainbow("Les exemples on été crées").blue
 
     end
 

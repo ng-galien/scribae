@@ -241,7 +241,7 @@ class Generator
     end
 
     def gen_post(sample = true, title = 'Article exemple', intro = nil, date = nil, featured = false)
-        
+        log "gen postfi"
         if date.nil?
             date = DateTime.now 
         end
@@ -296,7 +296,7 @@ class Generator
     end
 
     def gen_post_set(nb = 10, title = 'Article généré automatiquement ')
-        puts "gen posts set"
+        log "gen posts set"
         idx = 1
         nb.times do 
             date = DateTime.now.prev_day(idx)
