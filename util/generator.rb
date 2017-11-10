@@ -398,12 +398,7 @@ class Generator
             ])
             gen_image(400, 250, 150, File.join(story_asset, story_img), "section-image-#{idx}")
         end
-<<<<<<< HEAD
-    ensure
-        file.close
-=======
         File.write(story_file, content.join("\n"))     
->>>>>>> develop
     end
 
     def gen_story_set(nb = 5, title = "Rubrique")
@@ -558,7 +553,3 @@ class Generator
 
 end
 
-<<<<<<< HEAD
-=======
-
->>>>>>> develop

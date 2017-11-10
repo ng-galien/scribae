@@ -170,10 +170,6 @@ class Console
         silent = false
         cmd = []
         while !finish do
-<<<<<<< HEAD
-            
-=======
->>>>>>> develop
             if (args.delete(@@no_interractive_opt) == @@no_interractive_opt)
                 finish = true
                 silent = true
@@ -223,7 +219,3 @@ end
 Util.set_path
 cons = Console.new
 cons.handle_command(ARGV)
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
