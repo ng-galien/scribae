@@ -15,18 +15,13 @@ layout: default
     <div class="row">
     {% assign name = page.relative_path | split: "/" | last  %}
     {% assign name = name | split: "." | first  %}
-        
-    {% if page.auto_increment %}
-        {% assign arr = (1..page.auto_increment.size) %} 
-        {% assign images = '' | split: '' %}
-        {% for i in arr %}
-            {% assign img_path = i | append: ".jpg" | split: '_' %}  
-            {% assign images = images | concat: img_path %}
-        {% endfor %}
-    {% else %}
-        {% assign images = page.images %}
-    {% endif %}
-    
+
+    {% assign arr = (1..page.nbimg) %} 
+    {% assign images = '' | split: '' %}
+    {% for i in arr %}
+        {% assign img_path = i | append: ".jpg" | split: '_' %}  
+        {% assign images = images | concat: img_path %}
+    {% endfor %}
     {% for img in images %}
         {% assign img_src = "/assets/img/albums/" | append: name | append: "/" | append: img %}
         <div class="col s12 m4 l3">

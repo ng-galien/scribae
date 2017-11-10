@@ -363,123 +363,144 @@ class Generator
         end
     end
 
-    def gen_story(nb = 5, title = "Rubrique")     
-        idx = 1
-        nb.times do 
-            story_idx = idx * 10
-            story_name = format('%02d-%s', story_idx, sanitizeFilename(title))
-            story_file = File.join(@@story_dir, story_name + ".md")
-            story_asset = File.join(@@asset_dir, @@img_dir, @@story_asset)
-            story_img = story_name + ".jpg"
-            head = [
-                "---",
-                "#--------------",
-                "# Modèle section narration",
-                "#--------------",
-                "# Ordre d'aparition du chapitre",
-                "index: #{story_idx}",
-                "# Titre du thème",
-                "title: #{story_idx}. #{title}",
-                "---",
-            ].join("\n") + "\n"
-            file = File.open(story_file, "w")
-            file << head
-            file << "# " + LoremIpsum.lorem_ipsum(w: 4) + "\n\n"
-            
-            file << "![#{story_img}]()\n\n"
-            file << LoremIpsum.lorem_ipsum(w: 500) + "\n"
-            gen_image(400, 250, 150, File.join(story_asset, story_img), 'section-image-'+ idx.to_s)
-            idx += 1
+    def gen_story(sample, idx, title = "Rubrique")     
+
+        story_name = format('%02d-%s', idx, sanitizeFilename(title))
+        story_file = File.join(@@story_dir, story_name + ".md")
+        story_asset = File.join(@@asset_dir, @@img_dir, @@story_asset)
+        story_img = story_name + ".jpg"
+        content = [
+            "---",
+            "#--------------",
+            "# Modèle section narration",
+            "#--------------",
+            "# Ordre d'aparition du chapitre",
+            "index: #{idx}",
+            "# Titre du thème",
+            "title: #{idx}. #{title}",
+            "---",
+            "",
+        ]
+        if sample
+            content.push([
+                "## #{LoremIpsum.lorem_ipsum(w: 4)}\n",
+                ">#{LoremIpsum.lorem_ipsum(w: 20)}\n",
+                "",
+                "![#{story_img}]()",
+                "",
+                "#{LoremIpsum.lorem_ipsum(w: 50)}\n",
+                ""
+            ])
+            gen_image(400, 250, 150, File.join(story_asset, story_img), "section-image-#{idx}")
+        end
+        File.write(story_file, content.join("\n"))     
+    end
+
+    def gen_story_set(nb = 5, title = "Rubrique")
+        nb.times do |idx|
+            gen_story(true, idx, "#{idx+1} - Rubrique")
         end
     end
 
-    def gen_album(nb = 6, imgs = 25)
-        idx = 1
-        nb.times do 
-            date = Date.new(2017,1,1).next_day(idx)
-            dateTime = DateTime.new(2017,1,1).next_day(idx)
-            albumName = "album-" + idx.to_s
-            puts "generating sample album: " + albumName
-            albumFile = @@album_dir + "/" + albumName + ".md"
-            albumAsset = @@img_dir + "/" + @@album_dir + "/" + albumName
-            if !Dir.exist?(albumAsset)
-                Dir::mkdir(albumAsset, 0777)
-            end   
+    def gen_album(sample=false, title="titre", intro="intro", date=DateTime.now)
 
-            file = File.open(albumFile, "w")
-            file << "---"  + "\n"
-            file << "layout: album" + "\n"
-            file << "date: " + dateTime.iso8601 + "\n"
-            file << "title: Album " + idx.to_s + "\n"
-            file << "intro: " + LoremIpsum.lorem_ipsum(w: 6) + "\n"
-            file << "thumb: 1.jpg" + "\n"
-            file << "auto_increment:" + "\n"
-            file << "   size: " + imgs.to_s + "\n"
-            file << "---" + "\n"
-            file << "\n"
-            file << "## " + LoremIpsum.lorem_ipsum(w: 4) + "\n\n"
-            file << LoremIpsum.lorem_ipsum(w: 20) + "\n"
-            imgIdx = 1
-            imgs.times do
-                imgPath =  albumAsset + "/" + imgIdx.to_s + ".jpg"
-                gen_image(1280, 800, 150, "album"+ idx.to_s + "-img"+ imgIdx.to_s, imgPath)
-                imgIdx += 1
+        log "generating sample album: " + title
+        name = sanitizeFilename title
+        album_file = File.join(@@album_dir, name + ".md")
+        album_asset = File.join(@@asset_dir, @@img_dir, @@album_asset,  name)
+        nb = 0
+        if(sample)
+            nb = 20
+        end
+        if !Dir.exist?(album_asset)
+            Dir::mkdir(album_asset, 0777)
+        end   
+        content = [
+            "---",
+            "#--------------",
+            "# Modèle d'album",
+            "#--------------",
+            "# Ne pas modifier cette section pour les débutants!",
+            "layout: album",
+            "# Titre de l'album",
+            "title: \"#{title}\"",
+            "# Phrase d'introduction",
+            "intro: \"#{intro}\"",
+            "# Date de publication, format ISO 8601",
+            "date: #{date.iso8601}",
+            "# Image qui servira de miniature",
+            "thumb: 1.jpg",
+            "# Nombres d'images à afficher",
+            "nbimg: #{nb}",
+            "# Images du dossier à exclure",
+            "exclude: ",
+            "# Theme de couleur spécifique (couleur en fonction de l'ordre de la page)",
+            "theme: 4",
+            "---",
+            "\n"
+        ]
+        if sample
+            content.push([
+                "## #{LoremIpsum.lorem_ipsum(w: 4)}\n",
+                ">#{LoremIpsum.lorem_ipsum(w: 20)}\n",
+                "\n"
+            ])
+            nb.times do |idx|
+                img_file =  File.join(album_asset, "#{idx}.jpg")
+                gen_image(1280, 800, 150, img_file, "album image #{idx}")
             end
-            idx += 1
         end
+        File.write(album_file, content.join("\n"))
     end
 
-    def gen_album_set(nb = 7, title = 'Album')       
-        idx = 1
-        nb.times do 
-            name = title + ' ' + idx.to_s
-            gen_task(true, idx * 100, name)
-            idx += 1
+    def gen_album_set(nb = 6)       
+        nb.times do | idx |
+            date = DateTime.now.prev_day(idx)
+            gen_album(true,  "Album #{idx + 1}",  "Intro à l'album #{idx + 1}", date)
         end 
     end
 
     def gen_image(w = 1280, h = 800, dpi=72.0, out = "sample.jpg", msg = "message", src = nil)
         
         log "genImage to " + out
-        size = w.to_s + "x" + h.to_s
+        size = "#{w}x#{h}"
         col1 = "%06x" % (rand * 0xffffff)
         col2 = "%06x" % (rand * 0xffffff)
-        imgSpec = "plasma:#" + col1 + "-#" + col2
+        imgSpec = "plasma:##{col1}-##{col2}"
         #Load immage if src is nil
         sample = nil
         if src == nil
-            sample = ImageList.new(imgSpec) { self.size =  size} 
-            sample = sample.resample(dpi);           
+            sample = ImageList.new(imgSpec) { 
+                self.size =  size
+                self.density = "#{dpi}x#{dpi}"
+            }            
         else
             sample = ImageList.new(src)
             sample.resize_to_fill!(w, h)
-        end
-        log "Image #{sample.columns} X #{sample.rows}"
-        
+        end        
         #verbosity
         #sample.resize!(w, h)
         #resample at target dpi
         #sample = sample.resample(dpi);
         #sample.units = Magick::PixelsPerInchResolution
         #sample.density = "#{dpi}x#{dpi}"
-        
-        log "Image #{sample.columns} X #{sample.rows}"
+        #log "Image #{sample.columns} X #{sample.rows}"
         dpiFactor = dpi / 72
         if !msg.nil?
             text = Draw.new
             text.font_family = 'DejaVu-Sans'
 
-            text.pointsize = w / 20 *  dpiFactor
+            text.pointsize = w / 20
             text.gravity = CenterGravity
-            text.annotate(sample, 0,0,0, -w / 8 * dpiFactor, out) {
+            text.annotate(sample, 0,0,0, -w / 8, out) {
                 self.fill = 'black'
             }
-            text.pointsize = w / 17  * dpiFactor
+            text.pointsize = w / 17
             #text.gravity = NorthGravity
-            text.annotate(sample, 0,0,0, w / 8 * dpiFactor, size.to_s+"@"+dpi.to_s+"dpi") {
+            text.annotate(sample, 0,0,0, w / 8,"#{size}@#{dpi}dpi") {
                 self.fill = 'black'
             }
-            text.pointsize = w / 10  * dpiFactor
+            text.pointsize = w / 10
             #text.gravity = CenterGravity
             text.annotate(sample, 0,0,0,0, msg) {
                 self.fill = 'white'
@@ -493,7 +514,7 @@ class Generator
             quality = 40
         end
         quality = 80
-        log "quality #{quality}"
+        #log "quality #{quality}"
         sample.write(out) {
             self.quality = quality
         }

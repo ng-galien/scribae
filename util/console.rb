@@ -145,12 +145,14 @@ class Console
     end
 
     def create_sample(verbose=false, cmd=nil)
+        
         gen = Generator.new(true)
         gen.gen_home_images true
-        gen.gen_post_set(28, 'Article exemple ')
-        gen.gen_task_set(5, 'Sujet principal ')
-        gen.gen_story()
-        gen.gen_album()
+        gen.gen_post_set(28, "Article exemple")
+        gen.gen_task_set(5, 'Thème')
+        gen.gen_story_set()
+        gen.gen_album_set()
+
     end
 
     def confirm(msg = @@confirm_text)
@@ -163,17 +165,21 @@ class Console
         
     end
 
-    def handle_command(argv)
+    def handle_command(args)
         finish = false
         silent = false
-        
+        cmd = []
         while !finish do
-            if (cmd.delete(@@no_interractive_opt) == @@no_interractive_opt)
+            if (args.delete(@@no_interractive_opt) == @@no_interractive_opt)
                 finish = true
                 silent = true
             end
-            puts  @@prompt_text
-            cmd = gets.chomp.split(" ")
+            if !silent 
+                puts  @@prompt_text
+                cmd = gets.chomp.split(" ")
+            else
+                cmd = args
+            end
             verbose = cmd.delete(@@verbose_opt) == @@verbose_opt
             case cmd.shift
             when nil
@@ -200,7 +206,7 @@ class Console
                 when @@sample_cat
                     create_sample(verbose, cmd)
                 else
-                    puts unknown_text
+                    puts @@unknown_text
                     puts
                 end
             else
@@ -212,4 +218,5 @@ end
 
 Util.set_path
 cons = Console.new
-cons.handle_command()
+cons.handle_command(ARGV)
+
