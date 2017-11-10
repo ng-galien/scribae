@@ -162,10 +162,10 @@ class Console
             puts Rainbow("Avec l'option #{@@verbose_opt} vous suivrez le processus").yellow
         end
         gen.gen_home_images true
-        gen.gen_post_set(28, "Article exemple")
-        gen.gen_task_set(5, 'Thème')
-        gen.gen_story_set()
-        gen.gen_album_set()
+        gen.gen_post_set(15, "Article exemple")
+        gen.gen_task_set(4, 'Thème')
+        gen.gen_story_set(6)
+        gen.gen_album_set(3)
         puts Rainbow("Les exemples on été crées").blue
 
     end

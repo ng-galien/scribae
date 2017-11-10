@@ -10,8 +10,14 @@ img-size:
   medium:
     w: 800
     h: 600
+  medium-1:
+    w: 1000
+    h: 800
   large:
     w: 1200
+    h: 900
+  large-1:
+    w: 1400
     h: 900
   xl:
     w: 1600
