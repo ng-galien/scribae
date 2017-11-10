@@ -9,6 +9,7 @@ class Console
     @@no = "non"
     #Here the main command
     @@exit_cmd = "fin"
+    @@info_cmd = "info"
     @@help_cmd = "aide"
     @@init_cmd = "init"
     @@save_cmd = "enregistrer"
@@ -156,7 +157,10 @@ class Console
         
         gen = Generator.new(verbose)
         puts Rainbow("Vous avez choisi de créer un ensemble d'exemple").blue
-        puts Rainbow("Avec l'option #{@@verbose_opt} vous suivrez le processus").yellow
+        if !verbose
+            puts Rainbow("Cela va prendre un certain temps...").blue
+            puts Rainbow("Avec l'option #{@@verbose_opt} vous suivrez le processus").yellow
+        end
         gen.gen_home_images true
         gen.gen_post_set(28, "Article exemple")
         gen.gen_task_set(5, 'Thème')
@@ -200,6 +204,9 @@ class Console
                 finish = true
             when @@help_cmd
                 puts @@help_text
+            when @@info_cmd
+                puts Rainbow("Infos").blue
+                puts Rainbow("Répertoire courant: #{Dir.pwd}").blue
             when @@init_cmd
                 init(verbose, silent, cmd)
             when @@img_cmd
