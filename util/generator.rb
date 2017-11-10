@@ -241,7 +241,7 @@ class Generator
     end
 
     def gen_post(sample = true, title = 'Article exemple', intro = nil, date = nil, featured = false)
-        log "gen postfi"
+        log ":gen_post #{title}"
         if date.nil?
             date = DateTime.now 
         end
@@ -296,7 +296,7 @@ class Generator
     end
 
     def gen_post_set(nb = 10, title = 'Article généré automatiquement ')
-        log "gen posts set"
+        log ":gen_post_set #{nb}"
         idx = 1
         nb.times do 
             date = DateTime.now.prev_day(idx)
@@ -308,6 +308,7 @@ class Generator
 
     def gen_task(sample = true, index = 0, title = 'Thème exemple', intro = nil)
 
+        log ":gen_task #{title}"
         name = format('%03d', index) + "-" + sanitizeFilename(title)
         taskFile = File.join(@@task_dir, name + '.md')
         assetDir = File.join( @@asset_dir, @@img_dir, @@task_asset, name)
@@ -360,16 +361,15 @@ class Generator
     end
 
     def gen_task_set(nb = 7, title = 'Thème exemple')       
-        idx = 1
-        nb.times do 
-            name = title + ' ' + idx.to_s
+        log ":gen_task_set #{nb}"
+        nb.times do |idx|
+            name = "#{title} #{idx}"
             gen_task(true, idx * 100, name)
-            idx += 1
         end
     end
 
     def gen_story(sample, idx, title = "Rubrique")     
-
+        log ":gen_story #{title}"
         story_name = format('%02d-%s', idx, sanitizeFilename(title))
         story_file = File.join(@@story_dir, story_name + ".md")
         story_asset = File.join(@@asset_dir, @@img_dir, @@story_asset)
@@ -402,6 +402,7 @@ class Generator
     end
 
     def gen_story_set(nb = 5, title = LoremIpsum.lorem_ipsum(w: 12))
+        log ":gen_story_set #{nb}"
         nb.times do |idx|
             gen_story(true, idx, "Rubrique")
         end
@@ -409,7 +410,7 @@ class Generator
 
     def gen_album(sample=false, title="titre", intro="intro", date=DateTime.now)
 
-        log "generating sample album: " + title
+        log ":gen_album #{title}"
         name = sanitizeFilename title
         album_file = File.join(@@album_dir, name + ".md")
         album_asset = File.join(@@asset_dir, @@img_dir, @@album_asset,  name)
@@ -452,13 +453,14 @@ class Generator
             ])
             nb.times do |idx|
                 img_file =  File.join(album_asset, "#{idx}.jpg")
-                gen_image(1280, 800, 150, img_file, "album image #{idx}")
+                gen_image(1000, 700, 200, img_file, "album image #{idx}")
             end
         end
         File.write(album_file, content.join("\n"))
     end
 
-    def gen_album_set(nb = 6)       
+    def gen_album_set(nb = 6) 
+        log ":gen_album_set #{nb}"      
         nb.times do | idx |
             date = DateTime.now.prev_day(idx)
             gen_album(true,  "Album #{idx + 1}",  "Intro à l'album #{idx + 1}", date)
@@ -467,7 +469,7 @@ class Generator
 
     def gen_image(w = 1280, h = 800, dpi=72.0, out = "sample.jpg", msg = "message", src = nil)
         
-        log "genImage to " + out
+        log ":gen_image " + out
         size = "#{w}x#{h}"
         col1 = "%06x" % (rand * 0xffffff)
         col2 = "%06x" % (rand * 0xffffff)
@@ -518,11 +520,12 @@ class Generator
         if(dpi > 150)
             quality = 40
         end
-        quality = 80
+        quality = 100
         #log "quality #{quality}"
         sample.write(out) {
-            self.quality = quality
+            #self.quality = quality
         }
+        
 
     end
 
