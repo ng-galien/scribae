@@ -396,9 +396,9 @@ class Generator
         File.write(story_file, content.join("\n"))     
     end
 
-    def gen_story_set(nb = 5, title = "Rubrique")
+    def gen_story_set(nb = 5, title = LoremIpsum.lorem_ipsum(w: 12))
         nb.times do |idx|
-            gen_story(true, idx, "#{idx+1} - Rubrique")
+            gen_story(true, idx, "Rubrique")
         end
     end
 
@@ -506,7 +506,7 @@ class Generator
                 self.fill = 'white'
             }
         end
-        quality = 80
+        quality = 100
         if(dpi > 72)
             quality = 60 
         end
