@@ -31,7 +31,7 @@ class Console
     @@date_prop = "-- date"
     @@nb_prop = "--nb"
     #Here the cat
-
+    @@sample_cat = "exemple"
     @@post_cat = "article"
     @@task_cat = "sujet"
     @@story_cat = "section"
@@ -56,15 +56,16 @@ class Console
     "",
     Rainbow(@@exit_cmd).green + " >> quitter la console",
     Rainbow(@@help_cmd).green + " >> affiche l'aide",
-    Rainbow(@@init_cmd).green + " >> initialise le site",
-    "    options " + Rainbow(@@force_opt).green + " pour écraser les fichiers déjà crées",
-    "",
+    #Rainbow(@@init_cmd).green + " >> initialise le site",
+    #"    options " + Rainbow(@@force_opt).green + " pour écraser les fichiers déjà crées",
+    #"",
     Rainbow(@@create_cmd).green + " >> pour créer une publication",
     "",
     "    suivi de " + Rainbow(@@post_cat).green + " >> pour un article",
     "              " + Rainbow(@@task_cat).green + " >> pour un sujet",
     "              " + Rainbow(@@story_cat).green + " >> pour une section de la narration",
     "              " + Rainbow(@@album_cat).green + " >> pour une section de la narration",
+    "              " + Rainbow(@@sample_cat).green + " >> pour un jeux d'exemples complet",
     "",
     "    options " + Rainbow(@@force_opt).green + " >> pour écraser les fichiers déjà crées",
     "            " + Rainbow(@@sample_opt).green + " >> exemple prédéfini",
@@ -143,6 +144,15 @@ class Console
     def create_album(verbose=false, cmd=nil)
     end
 
+    def create_sample(verbose=false, cmd=nil)
+        gen = Generator.new(true)
+        gen.gen_home_images true
+        gen.gen_post_set(28, 'Article exemple ')
+        gen.gen_task_set(5, 'Sujet principal ')
+        gen.gen_story()
+        gen.gen_album()
+    end
+
     def confirm(msg = @@confirm_text)
         puts msg
         cmd = gets.chomp.split(" ")
@@ -153,10 +163,10 @@ class Console
         
     end
 
-    def handle_command()
+    def handle_command(argv)
         finish = false
         silent = false
-        begin
+        
         while !finish do
             if (cmd.delete(@@no_interractive_opt) == @@no_interractive_opt)
                 finish = true
@@ -187,6 +197,8 @@ class Console
                     create_section(verbose, cmd)
                 when @@album_cat
                     create_album(verbose, cmd)
+                when @@sample_cat
+                    create_sample(verbose, cmd)
                 else
                     puts unknown_text
                     puts
@@ -195,13 +207,9 @@ class Console
                 puts @@unknown_text
             end
         end
-        rescue => e
-            puts $!
-        raise e
     end
 end
 
 Util.set_path
 cons = Console.new
-#cons.background
-cons.handle_command
+cons.handle_command()

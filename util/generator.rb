@@ -346,9 +346,9 @@ class Generator
             taskThumb = assetDir + "/thumb.jpg"
             taskImg1 = assetDir + "/1.jpg"
             taskImg2 = assetDir + "/2.jpg"
-            genImage(500, 400, 150, taskThumb, true, 'miniature', nil)
-            genImage(1000, 600, 150, taskImg1, true, title, nil)
-            genImage(400, 200, 72, taskImg2, true, "autre", nil)
+            gen_image(500, 400, 150, taskThumb, 'miniature', nil)
+            gen_image(1000, 600, 150, taskImg1, title, nil)
+            gen_image(400, 200, 72, taskImg2,  "autre", nil)
         end
     ensure
         file.close    
@@ -388,7 +388,7 @@ class Generator
             
             file << "![#{story_img}]()\n\n"
             file << LoremIpsum.lorem_ipsum(w: 500) + "\n"
-            genImage(400, 250, 150, File.join(story_asset, story_img), true, 'section-image-'+ idx.to_s)
+            gen_image(400, 250, 150, File.join(story_asset, story_img), 'section-image-'+ idx.to_s)
             idx += 1
         end
     end
@@ -422,11 +422,20 @@ class Generator
             imgIdx = 1
             imgs.times do
                 imgPath =  albumAsset + "/" + imgIdx.to_s + ".jpg"
-                genImage(1280, 800, "album"+ idx.to_s + "-img"+ imgIdx.to_s, imgPath)
+                gen_image(1280, 800, 150, "album"+ idx.to_s + "-img"+ imgIdx.to_s, imgPath)
                 imgIdx += 1
             end
             idx += 1
         end
+    end
+
+    def gen_album_set(nb = 7, title = 'Album')       
+        idx = 1
+        nb.times do 
+            name = title + ' ' + idx.to_s
+            gen_task(true, idx * 100, name)
+            idx += 1
+        end 
     end
 
     def gen_image(w = 1280, h = 800, dpi=72.0, out = "sample.jpg", msg = "message", src = nil)
@@ -439,15 +448,16 @@ class Generator
         #Load immage if src is nil
         sample = nil
         if src == nil
-            sample = ImageList.new(imgSpec) { self.size =  size}            
+            sample = ImageList.new(imgSpec) { self.size =  size} 
+            sample = sample.resample(dpi);           
         else
             sample = ImageList.new(src)
+            sample.resize_to_fill!(w, h)
         end
         log "Image #{sample.columns} X #{sample.rows}"
         
         #verbosity
         #sample.resize!(w, h)
-        sample.resize_to_fill!(w, h)
         #resample at target dpi
         #sample = sample.resample(dpi);
         #sample.units = Magick::PixelsPerInchResolution
@@ -517,5 +527,4 @@ class Generator
 
 end
 
-gen = Generator.new(true)
-gen.gen_home_images false
+
