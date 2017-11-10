@@ -111,8 +111,13 @@ class Console
         end
     end
 
-    def create_post(verbose=false, cmd=nil)
+    def create_post(verbose=false, cmd=[])
+        
+        sample = cmd.delete(@@sample_opt) == @@sample_opt
         puts Rainbow("Vous avez choisi créer un article").blue
+        if sample
+            puts Rainbow("Vous avez choisi l'option exemple").yellow
+        end
         puts Rainbow("Donnez le titre de l'article (vide pour abandonner):").magenta
         date_time = nil
         featured = false
@@ -130,8 +135,8 @@ class Console
             intro = gets.chomp
             puts Rainbow("L'article doit-il être mis en avant? oui | non").magenta
             featured = gets.chomp == @@yes
-            #sample = true, title = 'Article exemple', intro = nil, date = nil, featured = false
-            generator.gen_post(sample, title, intro, date_time, featured)
+            gen = Generator.new(true)
+            gen.gen_post(sample, title, intro, date_time, featured)
         end
     end
 
