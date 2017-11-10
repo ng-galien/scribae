@@ -452,8 +452,8 @@ class Generator
                 "\n"
             ])
             nb.times do |idx|
-                img_file =  File.join(album_asset, "#{idx}.jpg")
-                gen_image(1000, 700, 200, img_file, "album image #{idx}")
+                img_file =  File.join(album_asset, "#{idx+1}.jpg")
+                gen_image(1000, 700, 200, img_file, "album image #{idx+1}")
             end
         end
         File.write(album_file, content.join("\n"))
